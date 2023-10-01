@@ -5,3 +5,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/categories/create', [CategoryController::class, 'create']);
+Route::put('/categories/{id}/update', [CategoryController::class, 'update']);
