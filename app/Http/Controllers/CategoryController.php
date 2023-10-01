@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -22,14 +24,14 @@ class CategoryController extends Controller
         return response()->json($categories, 200);
     }
 
-    public function create(Request $request)
+    public function create(CreateCategoryRequest $request)
     {
-        $category = $this->category->create($request->all());
+        $category = $this->category->create($request->validated());
 
         return response()->json($category, 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         $category = $this->category->find($id);
 
