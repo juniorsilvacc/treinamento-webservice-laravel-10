@@ -65,6 +65,11 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Not found'], 404);
         }
 
-        return response()->json($category, 200);
+        $products = $category->products;
+
+        return response()->json([
+            'category' => $category,
+            'products' => $products,
+        ], 200);
     }
 }
