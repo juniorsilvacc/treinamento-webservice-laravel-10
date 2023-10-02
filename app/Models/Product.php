@@ -13,6 +13,7 @@ class Product extends Model
         'name',
         'description',
         'image',
+        'category_id',
     ];
 
     public function getResults($data, $total)
@@ -36,8 +37,7 @@ class Product extends Model
                 $description = $data['description'];
                 $query->where('description', 'LIKE', "%{$description}%");
             }
-        })
-        ->paginate($total);
+        })->paginate($total);
 
         // ->toSql();
         // dd($results);

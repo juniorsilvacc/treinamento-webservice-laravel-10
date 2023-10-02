@@ -13,3 +13,5 @@ Route::get('/categories/{id}/details', [CategoryController::class, 'details']);
 
 // Produtos
 Route::get('/products', [ProductController::class, 'index']);
+Route::post('/products/create', [ProductController::class, 'create']);
+Route::put('/products/{id}/update', [ProductController::class, 'update']);
