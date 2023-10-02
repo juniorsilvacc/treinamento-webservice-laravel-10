@@ -6,6 +6,7 @@ use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -47,7 +48,23 @@ class ProductController extends Controller
 
     public function create(CreateProductRequest $request)
     {
-        $product = $this->product->create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $name = Str::kebab($request->name);
+            $extension = $request->file('image')->extension();
+
+            $nameFile = "{$name}.{$extension}";
+            $data['image'] = $nameFile;
+
+            $upload = $request->image->storeAs('products', $nameFile);
+
+            if (!$upload) {
+                return response()->json(['error' => 'Fail upload'], 500);
+            }
+        }
+
+        $product = $this->product->create($data);
 
         return response()->json($product, 201);
     }
