@@ -34,6 +34,10 @@ class UpdateProductRequest extends FormRequest
                 'max:100',
                 'string',
             ],
+            'image' => [
+                'image',
+                'max:1024',
+            ],
             'category_id' => [
                 'integer',
             ],

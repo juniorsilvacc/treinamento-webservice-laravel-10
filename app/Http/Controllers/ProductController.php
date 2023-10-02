@@ -6,11 +6,13 @@ use App\Http\Requests\CreateProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     private $product;
+    private $path = 'products';
 
     public function __construct(
         Product $product
@@ -51,15 +53,15 @@ class ProductController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            $name = Str::kebab($request->name);
-            $extension = $request->file('image')->extension();
+            $name = Str::kebab($request->name); // Nome do arquivo utilizando um Helper de separação de string
+            $extension = $request->file('image')->extension(); // Extenção do arquivo jpg, png, gif...
 
-            $nameFile = "{$name}.{$extension}";
-            $data['image'] = $nameFile;
+            $nameFile = "{$name}.{$extension}"; // Definindo o nome do arquivo com a extensão
+            $data['image'] = $nameFile; // Atribuindo na coluna 'image' o nome do arquivo com a extensão
 
-            $upload = $request->image->storeAs('products', $nameFile);
+            $upload = $request->image->storeAs($this->path, $nameFile); // Fazendo upload em products/nomearquivos.extensão
 
-            if (!$upload) {
+            if (!$upload) { // Se não houver upload retornar um error 500
                 return response()->json(['error' => 'Fail upload'], 500);
             }
         }
@@ -77,7 +79,29 @@ class ProductController extends Controller
             return response()->json(['error' => 'Not found'], 404);
         }
 
-        $product->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            if ($product->image) { // Se existir imagem, exclua, se não continua com o upload
+                if (Storage::exists("products/{$product->image}")) {
+                    Storage::delete("products/{$product->image}");
+                }
+            }
+
+            $name = Str::kebab($request->name); // Nome do arquivo utilizando um Helper de separação de string
+            $extension = $request->file('image')->extension(); // Extenção do arquivo jpg, png, gif...
+
+            $nameFile = "{$name}.{$extension}"; // Definindo o nome do arquivo com a extensão
+            $data['image'] = $nameFile; // Atribuindo na coluna 'image' o nome do arquivo com a extensão
+
+            $upload = $request->image->storeAs($this->path, $nameFile); // Fazendo upload em products/nomearquivos.extensão
+
+            if (!$upload) { // Se não houver upload retornar um error 500
+                return response()->json(['error' => 'Fail upload'], 500);
+            }
+        }
+
+        $product->update($data);
 
         return response()->json($product, 200);
     }
@@ -88,6 +112,12 @@ class ProductController extends Controller
 
         if (!$product) {
             return response()->json(['error' => 'Not found'], 404);
+        }
+
+        if ($product->image) { // Excluir uma imagem vinculada ao produto
+            if (Storage::exists("products/{$product->image}")) {
+                Storage::delete("products/{$product->image}");
+            }
         }
 
         $product->delete();
