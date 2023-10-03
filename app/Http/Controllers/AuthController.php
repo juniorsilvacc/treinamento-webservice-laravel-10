@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,5 +21,18 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    public function register(Request $request)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        $token = $user->createToken('my-token')->plainTextToken;
+
+        return response()->json(['access_token' => $token]);
     }
 }

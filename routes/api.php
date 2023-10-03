@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     // Login
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
 
     Route::middleware('auth:sanctum')->group(function () {
         // Categorias
