@@ -6,9 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-// 10|kvAxijMWMTkoJ8ZhVso3Xs95EYDCCEYIa6BhIiKWa89c5884
-// 8|shBoZQOGnz2uodisRCr26p7wut2vlabhAlTew1I67f893e22
-
 class AuthController extends Controller
 {
     public function login(Request $request)
@@ -34,5 +31,12 @@ class AuthController extends Controller
         $token = $user->createToken('my-token')->plainTextToken;
 
         return response()->json(['access_token' => $token]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => 'Logout successful']);
     }
 }
